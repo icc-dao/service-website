@@ -1,0 +1,34 @@
+version: '3.4'
+
+services:
+  iotacreator-website:
+    image: wordpress
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: ${DB_USER}
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${DB_NAME}
+    links:
+      - iotacreator-db:db
+    volumes:
+      - iotacreator-website-vol:/var/www/html
+      - ./themes/iccd-v1:/var/www/html/wp-content/themes/iccd-v1
+      - ./php-conf/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+
+  iotacreator-db:
+    image: mariadb:10.7
+    restart: always
+    environment:
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      MARIADB_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - iotacreator-db-vol:/var/lib/mysql
+
+volumes:
+  iotacreator-website-vol:
+  iotacreator-db-vol:
