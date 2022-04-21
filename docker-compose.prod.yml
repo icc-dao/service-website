@@ -13,7 +13,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=traefik-v2-proxy
-      - traefik.http.services.iccd-landing-app.loadbalancer.server.port=8000
+      - traefik.http.services.iccd-landing-app.loadbalancer.server.port=80
       - traefik.http.routers.iccd-landing-app.rule=Host(`www.${DOMAIN:?-}`) || Host(`${DOMAIN}`)
       - traefik.http.routers.iccd-landing-app.middlewares=iccd-landing-app,iccd-landing-app_redirect,iccd-landing-app-nonwww
       - traefik.http.routers.iccd-landing-app.entrypoints=websecure
