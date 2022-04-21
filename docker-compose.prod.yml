@@ -1,0 +1,39 @@
+version: "3.4"
+
+services:
+  iotacreator-website:
+    networks:
+      - traefik-v2-proxy
+      - default
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: ${DB_USER}
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${DB_NAME}
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-v2-proxy
+      - traefik.http.services.iccd-landing-app.loadbalancer.server.port=5022
+      - traefik.http.routers.iccd-landing-app.rule=Host(`www.${DOMAIN:?-}`) || Host(`${DOMAIN}`)
+      - traefik.http.routers.iccd-landing-app.middlewares=iccd-landing-app,iccd-landing-app_redirect,iccd-landing-app-nonwww
+      - traefik.http.routers.iccd-landing-app.entrypoints=websecure
+      - traefik.http.routers.iccd-landing-app.tls.certresolver=letsencrypt
+      - traefik.http.middlewares.iccd-landing-app.headers.stsSeconds=155520011
+      - traefik.http.middlewares.iccd-landing-app.headers.stsIncludeSubdomains=true
+      - traefik.http.middlewares.iccd-landing-app.headers.stsPreload=true
+      - traefik.http.middlewares.iccd-landing-app.headers.contentTypeNosniff=true
+      - traefik.http.middlewares.iccd-landing-app.headers.browserXSSFilter=true
+      - traefik.http.middlewares.iccd-landing-app_redirect.redirectregex.permanent=true
+      - traefik.http.middlewares.iccd-landing-app-nonwww.redirectregex.regex=^https://${DOMAIN:?-}/(.*)
+      - traefik.http.middlewares.iccd-landing-app-nonwww.redirectregex.replacement=https://www.${DOMAIN:?-}/$${1}
+      - traefik.http.middlewares.iccd-landing-app-nonwww.redirectregex.permanent=true
+
+  iotacreator-db:
+    environment:
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+
+networks:
+  traefik-v2-proxy:
+    external: true

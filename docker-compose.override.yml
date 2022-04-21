@@ -2,14 +2,16 @@ version: '3.4'
 
 services:
   iotacreator-website:
+    ports:
+      - 8000:80
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: iccd-web
       WORDPRESS_DB_NAME: iccd-web
       WORDPRESS_DB_PASSWORD: GUEoJW9oDnhhcqeGAm3I
+
   iotacreator-db:
     environment:
       MARIADB_DATABASE: iccd-web
       MARIADB_USER: iccd-web
       MARIADB_PASSWORD: GUEoJW9oDnhhcqeGAm3I
-      MARIADB_RANDOM_ROOT_PASSWORD: '1'
